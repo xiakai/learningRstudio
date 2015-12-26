@@ -7,61 +7,128 @@ output: html_document
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r}
-summary(cars)
-```
-
-You can also embed plots, for example:
-
-```{r, echo=FALSE}
-plot(cars)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-
 # Linux mint 系统设置
 
 ## 软件安装
 
-* shadowsocks
+完善系统
 
-```
-sudo add-apt-repository ppa:hzwhuang/ss-qt5
-sudo apt-get update
-sudo apt-get install shadowsocks-qt5
+-额外解码包，It would also install the microsoft fonts.
+  >-sudo apt-get install ubuntu-restricted-extras
 
-* 无线网卡驱动-360wifi
+-rar以及其他归档工具
+  sudo apt-get install unace p7zip-rar sharutils rar arj lunzip lzip
+
+-Get old wallpapers
+  sudo apt-get install mint-backgrounds-*
+
+- Make other partitions writable
+  gksudo nemo
+  
+
+*shadowsocks
+
+ sudo add-apt-repository ppa:hzwhuang/ss-qt5
+ sudo apt-get update
+ sudo apt-get install shadowsocks-qt5
+
+* 无线网卡驱动-360wifi  
+
+  sudo add-apt-repository ppa:thopiekar/mt7601
+  sudo apt-get update
+  sudo apt-get install mt7601-sta-dkms
+  
+  
 * proxychains
+  
 
 * fcitx在系统设置里安装
-额外安装云拼音，sunpinyin，googlepinyin，最常用rime
+  额外安装云拼音，sunpinyin，googlepinyin，最常用rime
 
 * 剪贴板增强工具用copyq
-备用的选择包括r
-clipit，glippy，glipper/klipper，pastie，parcellite，diodon，第一个最小巧。
+  https://github.com/hluk/CopyQ/releases
+  备用的选择包括r
+  clipit，glippy，glipper/klipper，pastie，parcellite，diodon，第一个最小巧。
 
-* 互联网下载工具包括deluge，uget，aria2
+* 互联网下载工具包括deluge，uget，aria2(调整连接数)
 
 * 阅读工具包括 liferea
 
+* Grub Customizer - Modify GRUB boot menu settings   ----the fuck
+
 * 常用编程工具包括spacemacs（emacs），rstudio
 
-* 常用软件guake，furius ISO挂载，font manager字体管理，gnug防火墙设置，bleachbit清理
+* 常用软件guake下拉终端，furius ISO挂载，font manager字体管理，Gufw - Firewall configuration tool，bleachbit清理
 
-* 常用影音工具包括 easytag，
+* 常用影音工具包括 easytag，Rhythmbox, Clementine - Music players，
+  Openshot, Kdenlive - Video editor，Audacity - Audio editor,Smplayer - Multimedia player
+  Kazam, recordMyDesktop - Desktop recording/screencasting
+  Tv-maxe - view tv channels
+  
+  sudo add-apt-repository ppa:venerix/pkg -y
+  sudo apt-get update && sudo apt-get install tv-maxe -y
+  
+  还有通过ffmpeg官网找到的一个14.04的ppa影音包
+  
+* 娱乐学习软件包括anki，blender，Golden Dict，有道词典
 
-* 娱乐学习软件包括anki，blender，
+* 常用系统小工具 
+  Gnome Encfs Manager - Manager files and folders encrypted with Encfs
+  
 
-* 系统美化
+
+
+
+
+
+
+# 系统美化
   -主题选择moka
+sudo add-apt-repository ppa:moka/stable
+sudo apt-get update
+sudo apt-get install moka-icon-theme
+
+  -numix
+sudo apt-add-repository ppa:numix/ppa
+sudo apt-get update
+sudo apt-get install numix-icon-theme numix-icon-theme-circle
+sudo apt-get install numix-gtk-theme
+
+  -Conky - System Monitor for Ubuntu
+sudo apt-add-repository -y ppa:teejee2008/ppa
+sudo apt-get update
+sudo apt-get install conky-manager
+
+  -小工具 
+  Typhoon weather widget，
+  
+  Gnome-Pie
+  sudo add-apt-repository ppa:simonschneegans/testing
+  sudo apt-get update
+  sudo apt-get install gnome-pie
+  
+  
+  
+    
 
 
 
-+ 解决在rstudio中fcitx无法输入的问题
 
-sudo ln -s /usr/lib/$(dpkg-architecture -qDEB_BUILD_MULTIARCH)/qt5/plugins/platforminputcontexts/libfcitxplatforminputcontextplugin.so /usr/lib/rstudio/bin/plugins/platforminputcontexts/
+
+# 常见问题
+
++ dropbox 同步额外的文件夹，用symlink
+ln -s /path/to/folder/that/you/want/to/sync/ ~/Dropbox/folder/name
+The original file will need to have permissions set to 664 at a minimum
+或者nemo也可以，Navigate with Nautilus file manager to the desired folder, right click it, select Make link, then move the resulting Link to desired-folder to the Dropbox folder. If the desired directory is outside your home directory, you may have to start gksudo nautilus via Terminal to make those links
+
+
++ 解决在rstudio 0.99中fcitx无法输入的问题
+  https://support.rstudio.com/hc/en-us/articles/205605748-Using-RStudio-0-99-with-Fctix-on-Linux
+  
+  On Linux, RStudio uses a bundled version of Qt 5 that does not include support for Fctix by default. To resolve the   problem, you can add Fctix's Qt 5 plugin from your system's Qt 5 installation to RStudio's platform input plugin      folder
+  
+    sudo ln -s /usr/lib/$(dpkg-architecture-qDEB_BUILD_MULTIARCH)/qt5/plugins/platforminputcontexts/libfcitxplatformin       putcontextplugin.so   /usr/lib/rstudio/bin/plugins/platforminputcontexts/
 
 
 + 解决rstudio无法安装包的问题，在Tools里有提示
