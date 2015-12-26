@@ -1,0 +1,71 @@
+---
+title: "LinuxMint-config"
+author: "xiakai"
+date: "2015年12月26日"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+summary(cars)
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+# Linux mint 系统设置
+
+## 软件安装
+
+* shadowsocks
+
+```
+sudo add-apt-repository ppa:hzwhuang/ss-qt5
+sudo apt-get update
+sudo apt-get install shadowsocks-qt5
+
+* 无线网卡驱动-360wifi
+* proxychains
+
+* fcitx在系统设置里安装
+额外安装云拼音，sunpinyin，googlepinyin，最常用rime
+
+* 剪贴板增强工具用copyq
+备用的选择包括r
+clipit，glippy，glipper/klipper，pastie，parcellite，diodon，第一个最小巧。
+
+* 互联网下载工具包括deluge，uget，aria2
+
+* 阅读工具包括 liferea
+
+* 常用编程工具包括spacemacs（emacs），rstudio
+
+* 常用软件guake，furius ISO挂载，font manager字体管理，gnug防火墙设置，bleachbit清理
+
+* 常用影音工具包括 easytag，
+
+* 娱乐学习软件包括anki，blender，
+
+* 系统美化
+  -主题选择moka
+
+
+
++ 解决在rstudio中fcitx无法输入的问题
+
+sudo ln -s /usr/lib/$(dpkg-architecture -qDEB_BUILD_MULTIARCH)/qt5/plugins/platforminputcontexts/libfcitxplatforminputcontextplugin.so /usr/lib/rstudio/bin/plugins/platforminputcontexts/
+
+
++ 解决rstudio无法安装包的问题，在Tools里有提示
+
+setRepositories(addURLs =
+                c(CRANxtras = "http://www.stats.ox.ac.uk/pub/RWin"))
+                
