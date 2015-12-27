@@ -7,6 +7,46 @@ output: html_document
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
+为什么要写这篇给自己的指南？
+
+因为我是个新手，如果碰到很复杂的问题解决不了可能最后只有重装这条路。
+
+前天因为浏览屏保时，不小心选择一个在离开后屏幕无法唤醒（据说有2个，算是17.3的bug吧），键盘无反应。当时dist-upgrade刚升级内核到vivid，3.19~42，之前使用上都没有问题，所谓我想通过降级内核到39来解决这个问题，先后安装了软件中心的kde-grub-configure，和grub-customizer都不能设置，后者更是导致我的grub引导出现问题。在同时我还上IRc上需求帮助，有人让我用dmesg来查看信息，他觉得可能是开源显卡驱动或者mdm的问题。但是我该死的用了update-grub导致启动里没有linux，我也没在意，结果就是进不去系统。
+
+后来折腾到半夜两点，一点没有头绪，出了宿舍们还没带钥匙，在护士值班室躺了后半夜。看ask-ubuntu也有了点思路。睡醒后又折腾一上午，通过U盘的livecd（mint17.3），学会了mount挂载系统盘和一些关键的文件夹，并chroot系统。尝试重新安装但没有效果，update还是只识别出内存诊断的选项，后重新安装grub-customizer发现主要启动项目都被删除，幸好可以恢复，这次update就可以识别出linux引导，但是有重复，grub启动后也有糟糕的画面或者进不了系统，总之不完美。我想卸载后重新装grub，但是无果。后来在ubuntu的社区wiki上看了篇详细的boot-repair，了解到它会删除后重新装grub2，但只能在livecd里正常工作。到了下午5点终于搞定了。grub版本20.2-9ubuntu6，好像比之前低点，是8？
+
+但是我的问题还没解决，我通过更换n卡专用驱动或者使用lightdm都没法解决唤醒的问题。今天中午在试着锁定系统时出现的画面引起来我的怀疑，我还想是不是与我安装了bb有关，但后者已经被卸载了。我想mintos群里求助，他们说那个画面就是屏保，好吧，事情到这里总算有点眉目了。很自然的把屏保换成默认的，问题结局，据他们说还有一个屏保也会出现这种问题，怎么让我赶上了，你说这绕的一大圈和两天的时间。
+
+
+#How to Repair, Restore, or Reinstall Grub 2 with a Ubuntu Live CD or USB
+
+
+sudo mount /dev/sdXY /mnt
+
+sudo mount --bind /dev /mnt/dev &&
+sudo mount --bind /dev/pts /mnt/dev/pts &&
+sudo mount --bind /proc /mnt/proc &&
+sudo mount --bind /sys /mnt/sys
+
+sudo chroot /mnt
+
+
+grub-install /dev/sdX
+grub-install --recheck /dev/sdX
+update-grub
+
+sudo umount /mnt/proc &&
+sudo umount /mnt/dev/pts &&
+sudo umount /mnt/dev &&
+sudo umount /mnt
+
+sdXY可以通过Gparted查看。
+
+如何安全删除文件、、、
+
+
+grep menuentry /boot/grub/grub.cfg
+
 # Linux mint 系统设置
 
 ## 软件安装
@@ -70,11 +110,16 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
   
   还有通过ffmpeg官网找到的一个14.04的ppa影音包
   
+  k3b: CD/DVD刻录软件，推荐
+  
 * 娱乐学习软件包括anki，blender，Golden Dict，有道词典
 
 * 常用系统小工具 
   Gnome Encfs Manager - Manager files and folders encrypted with Encfs
   
+  PDF分割 pdf shuffler
+  
+  漫画浏览Mcomix，截屏工具shutter，锻炼脑力gbrainy，室内布局Sweet Home 3D
 
 
 
@@ -109,6 +154,8 @@ sudo apt-get install conky-manager
   
   
   
+  
+  
     
 
 
@@ -135,4 +182,10 @@ The original file will need to have permissions set to 664 at a minimum
 
 setRepositories(addURLs =
                 c(CRANxtras = "http://www.stats.ox.ac.uk/pub/RWin"))
+                
+                
+                
+                
+                
+                
                 
