@@ -13,7 +13,7 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 
 前天因为浏览屏保时，不小心选择一个在离开后屏幕无法唤醒（据说有2个，算是17.3的bug吧），键盘无反应。当时dist-upgrade刚升级内核到vivid，3.19~42，之前使用上都没有问题，所谓我想通过降级内核到39来解决这个问题，先后安装了软件中心的kde-grub-configure，和grub-customizer都不能设置，后者更是导致我的grub引导出现问题。在同时我还上IRc上需求帮助，有人让我用dmesg来查看信息，他觉得可能是开源显卡驱动或者mdm的问题。但是我该死的用了update-grub导致启动里没有linux，我也没在意，结果就是进不去系统。
 
-后来折腾到半夜两点，一点没有头绪，出了宿舍们还没带钥匙，在护士值班室躺了后半夜。看ask-ubuntu也有了点思路。睡醒后又折腾一上午，通过U盘的livecd（mint17.3），学会了mount挂载系统盘和一些关键的文件夹，并chroot系统。尝试重新安装但没有效果，update还是只识别出内存诊断的选项，后重新安装grub-customizer发现主要启动项目都被删除，幸好可以恢复，这次update就可以识别出linux引导，但是有重复，grub启动后也有糟糕的画面或者进不了系统，总之不完美。我想卸载后重新装grub，但是无果。后来在ubuntu的社区wiki上看了篇详细的boot-repair，了解到它会删除后重新装grub2，但只能在livecd里正常工作。到了下午5点终于搞定了。grub版本20.2-9ubuntu6，好像比之前低点，是8？
+后来折腾到半夜两点，一点没有头绪，出了宿舍们还没带钥匙，在护士值班室躺了后半夜。看ask-ubuntu也有了点思路。睡醒后又折腾一上午，通过U盘的livecd（mint17.3），学会了mount挂载系统盘和一些关键的文件夹，并chroot系统。尝试重新安装但没有效果，update还是只识别出内存诊断的选项，后重新安装grub-customizer发现主要启动项目都被删除，幸好可以恢复，这次update就可以识别出linux引导，但是有重复，grub启动后也有糟糕的画面或者进不了系统，总之不完美。我想卸载后重新装grub，但是无果。后来在ubuntu的社区wiki上看了篇详细的boot-repair，了解到它会删除后重新装grub2，但只能在livecd里正常工作。到了下午5点终于搞定了。grub版本2.0beta2~9ubuntu6，好像比之前低点，是8？
 
 但是我的问题还没解决，我通过更换n卡专用驱动或者使用lightdm都没法解决唤醒的问题。今天中午在试着锁定系统时出现的画面引起来我的怀疑，我还想是不是与我安装了bb有关，但后者已经被卸载了。我想mintos群里求助，他们说那个画面就是屏保，好吧，事情到这里总算有点眉目了。很自然的把屏保换成默认的，问题结局，据他们说还有一个屏保也会出现这种问题，怎么让我赶上了，你说这绕的一大圈和两天的时间。
 
@@ -27,6 +27,8 @@ sudo mount --bind /dev /mnt/dev &&
 sudo mount --bind /dev/pts /mnt/dev/pts &&
 sudo mount --bind /proc /mnt/proc &&
 sudo mount --bind /sys /mnt/sys
+或者#！/bin/bash
+      for i in /sys /proc /run /dev ; do sudo mount --bind "$i" "/mnt$i" ; done
 
 sudo chroot /mnt
 
@@ -41,8 +43,13 @@ sudo umount /mnt/dev &&
 sudo umount /mnt
 
 sdXY可以通过Gparted查看。
+或 ls -l /boot dpkg -l / grep grub 
 
-如何安全删除文件、、、
+调整grub /etc/default/grub 0改成saved，是否加""?
+          3个文件夹中还有一个/usr/lib/grub/*
+          /etc/grub.d/back/boot.cfg
+          
+如何安全删除文件,涉及安全、、、
 
 
 grep menuentry /boot/grub/grub.cfg
@@ -81,6 +88,21 @@ grep menuentry /boot/grub/grub.cfg
   
 * proxychains
   
+  
+    在源里有这个软件，直接安装
+    启动Shawdowsocks，并连接至服务器。
+    编辑/etc/proxychains.conf
+    sudo vim /etc/proxychains.conf
+    在最后的ProxyList里加入Shawdowsocks的代理设置：
+    socks5    127.0.0.1    1080
+    编辑/usr/bin/proxychains
+    修改
+    LD_PRELOAD=libproxychains.so.3
+    为（根据自己系统里的libproxychains.so.3设置）
+    LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libproxychains.so.3
+    使用方法，只需要在运行程序的命令前加上proxychains即可。以Dropbox为例，在命令行环境下运行：
+    proxychains dropbox start -i
+    注：socks4 127.0.0.1 1080
 
 * fcitx在系统设置里安装
   额外安装云拼音，sunpinyin，googlepinyin，最常用rime
@@ -99,7 +121,48 @@ grep menuentry /boot/grub/grub.cfg
 * 常用编程工具包括spacemacs（emacs），rstudio
 
 * 常用软件guake下拉终端，furius ISO挂载，font manager字体管理，Gufw - Firewall configuration tool，bleachbit清理
+          zsh 安装sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+          This isn't a bug, the history file is saved in metafied format. If you want to print it outside zsh you can use this simple program.
+          
+#define Meta ((char) 0x83)
 
+#define _GNU_SOURCE
+#include <stdio.h>
+#include <stdlib.h>
+
+/* from zsh utils.c */
+char *unmetafy(char *s, int *len)
+{
+  char *p, *t;
+
+  for (p = s; *p && *p != Meta; p++);
+  for (t = p; (*t = *p++);)
+    if (*t++ == Meta)
+      t[-1] = *p++ ^ 32;
+  if (len)
+    *len = t - s;
+  return s;
+}
+
+int main(int argc, char *argv[]) {
+  char *line = NULL;
+  size_t size;
+
+  while (getline(&line, &size, stdin) != -1) {
+    unmetafy(line, NULL);
+    printf("%s", line);
+  }
+
+  if (line) free(line);
+  return EXIT_SUCCESS;
+}
+
+
+-- 
+Mikael Magnusson
+
+
+          
 * 常用影音工具包括 easytag，Rhythmbox, Clementine - Music players，
   Openshot, Kdenlive - Video editor，Audacity - Audio editor,Smplayer - Multimedia player
   Kazam, recordMyDesktop - Desktop recording/screencasting
@@ -121,13 +184,22 @@ grep menuentry /boot/grub/grub.cfg
   
   漫画浏览Mcomix，截屏工具shutter，锻炼脑力gbrainy，室内布局Sweet Home 3D
 
-
+  如何安装pip
+  
+  
+  ubuntu帐号cosmoxia，xia常用
 
 
 
 
 
 # 系统美化
+
+  -增加字体
+    curl -kL https://raw.github.com/cstrap/monaco-font/master/install-font-ubuntu.sh | bash
+    来源：https://github.com/cstrap/monaco-font
+
+
   -主题选择moka
 sudo add-apt-repository ppa:moka/stable
 sudo apt-get update
@@ -178,14 +250,28 @@ The original file will need to have permissions set to 664 at a minimum
     sudo ln -s /usr/lib/$(dpkg-architecture-qDEB_BUILD_MULTIARCH)/qt5/plugins/platforminputcontexts/libfcitxplatformin       putcontextplugin.so   /usr/lib/rstudio/bin/plugins/platforminputcontexts/
 
 
++待解决，emacs中ficitx在光标出预先显示可输入文字
+
+
 + 解决rstudio无法安装包的问题，在Tools里有提示
 
 setRepositories(addURLs =
                 c(CRANxtras = "http://www.stats.ox.ac.uk/pub/RWin"))
+sudo apt-get install r-cran-testthat
                 
-                
-                
-                
+
++ 安装ruby，nodejs
+  https://github.com/jhu-ep-coursera/fullstack-course1-module1/blob/master/Lecture01-Installation/Linux-Installs/ubuntu-devenv/sw-install-rbenv-ubuntu.sh   
+  使用chirs-lea的node.js后无法安装npm
+  
+  
++脚本安装pip，我的是install python-pip
+  curl -O https://raw.github.com/pypa/pip/master/contrib/get-pip.py
+  python get-pip.py
+  Upgrading all packages with pip  
+  pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
+  (echo pip; pip freeze | awk 'BEGIN{FS="=="}{print $1}') | xargs sudo pip
+
                 
                 
                 
